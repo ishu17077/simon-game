@@ -23,8 +23,8 @@ body {
   align-items: center;
   margin: 10px;
   display: inline-block;
-  height: 150px;
-  width: 150px;
+  height: 8.3rem;
+  width: 8.3rem;
   border: 20px solid black;
   border-radius: 20%;
 }
