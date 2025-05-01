@@ -5,7 +5,7 @@ var buttonColors = ["red", "blue", "green", "yellow"];
 var level = 1;
 var generatedSequence = [];
 var userSeqIndx = 0;
-var isGameEnded = true;
+var hasGameEnded = true;
 var winningTexts = [
    "Keep going! 🎉",
    "Amazing!🔥",
@@ -20,6 +20,7 @@ var winningTexts = [
    "Bravo! 🎊",
    "Legendary! 🐾"
 ];
+var wrongAudio = new Audio("./sounds/wrong.mp3");
 var winningTextIndex = 0;
 
 function cycleQuotes() {
@@ -31,9 +32,7 @@ function cycleQuotes() {
 
 
 function addNewColor() {
-
    generatedSequence.push(buttonColors[randomNumber()]);
-
 }
 
 function randomNumber() {
@@ -54,36 +53,48 @@ function randomNumber() {
 
 
 async function animateSequence() {
-   for (var i = 0; i < generatedSequence.length; i++) {
-      await $("#" + generatedSequence[i]).animate({
-         opacity: 0.3
-      }).animate({
-         opacity: 1.0
-      }).promise();
+   if (!hasGameEnded) {
+      for (var i = 0; i < generatedSequence.length; i++) {
+         var audio = new Audio(`./sounds/${generatedSequence[i]}.mp3`);
+         audio.play().then(function () {
+            audio.remove();
+         });
+         await $("#" + generatedSequence[i]).animate({
+            opacity: 0.3
+         }).animate({
+            opacity: 1.0
+         }).promise();
+      }
    }
 
 }
 
 
 async function levelHandler() {
-   addNewColor();
-   await animateSequence();
-   checkSequence();
+   if (!hasGameEnded) {
+      addNewColor();
+      await animateSequence();
+      checkSequence();
+   }
 }
 
 async function checkSequence() {
-   $(".btn").on("click", async function (event) {
+   $(".btn").on("click", function (event) {
       var button = $(this);
+      var audio = new Audio(`./sounds/${this.id}.mp3`);
+      audio.play().then(function () {
+         audio.remove();
+      });
+
       button.addClass("pressed");
-      console.log("clicked");
-      await button.animate({
+      button.animate({
          opacity: 0.3
       }).animate({
          opacity: 1.0
       }).promise();
       setTimeout(function () {
          button.removeClass("pressed");
-         console.log()
+
       }, 200);
       if (userSeqIndx + 1 == generatedSequence.length) {
          if (this.id != generatedSequence[userSeqIndx++]) {
@@ -93,52 +104,53 @@ async function checkSequence() {
          setTimeout(function () {
             nextLevel();
          }, 1000);
-
+         return true;
 
       } else if (userSeqIndx < generatedSequence.length) {
          if (this.id != generatedSequence[userSeqIndx++]) {
             gameLost();
             return false;
          }
-
       } else {
-         setTimeout(function () {
-            nextLevel();
-         }, 1000);
+         gameLost();
+         return false;
       }
 
-      function gameLost() {
-         $("#level-title").text("Aw cutie, you lost! Wanna marry me?💐 Press A.");
-         isGameEnded = true;
-         $(".btn").off("click");
-      }
 
-      function nextLevel() {
-         $("#level-title").text(winningTexts[randomNumber()]);
-         level++;
-         userSeqIndx = 0;
-         levelHandler();
-         $(".btn").off("click");
-      }
    });
 }
 
+function gameLost() {
+   $("#level-title").text("Aw cutie, you lost! Wanna marry me?💐 Press A.");
+   wrongAudio.play();
+   generatedSequence = [];
+   hasGameEnded = true;
+   $(".btn").off("click");
+}
+
+function nextLevel() {
+   $("#level-title").text(winningTexts[randomNumber()]);
+   level++;
+   userSeqIndx = 0;
+   levelHandler();
+   $(".btn").off("click");
+}
 
 function startGame() {
    level = 1;
-   isGameEnded = false;
+   hasGameEnded = false;
    levelHandler();
 }
 
 $(document).on("click", function () {
-   if (isGameEnded) {
+   if (hasGameEnded) {
       startGame();
       $("#level-title").text("Game On!");
    }
 });
 
 $(document).on("keydown", function (event) {
-   if (event.key.toLowerCase() == 'a' && isGameEnded) {
+   if (event.key.toLowerCase() == 'a' && hasGameEnded) {
       startGame();
       $("#level-title").text("Game On!");
    }
