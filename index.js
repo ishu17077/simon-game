@@ -5,17 +5,35 @@ var buttonColors = ["red", "blue", "green", "yellow"];
 var level = 1;
 var generatedSequence = [];
 var userSeqIndx = 0;
-var hasGameEnded = true;
-var winningStreakTexts = [
-   "You're on fire! 🔥",
-   "Unstoppable! 🚀",
-   "Unbeatable! 🥇",
-   "Incredible streak! 🎉"
+var isGameEnded = true;
+var winningTexts = [
+   "Keep going! 🎉",
+   "Amazing!🔥",
+   "Champion vibes! 🏆",
+   "Incredible!🌟",
+   "You're unstoppable! 🚀",
+   "Fantastic! 💫",
+   "Great job! 👏",
+   "Superb! 🌈",
+   "You're a star! ⭐",
+   "Outstanding! 🥇",
+   "Bravo! 🎊",
+   "Legendary! 🐾"
 ];
+var winningTextIndex = 0;
+
+function cycleQuotes() {
+   if ((++winningTextIndex) + 1 > winningTexts.length) {
+      winningTextIndex = 0;
+   }
+   return winningTexts[winningTextIndex];
+}
 
 
 function addNewColor() {
+
    generatedSequence.push(buttonColors[randomNumber()]);
+
 }
 
 function randomNumber() {
@@ -48,89 +66,80 @@ async function animateSequence() {
 
 
 async function levelHandler() {
-   if (!hasGameEnded) {
-      addNewColor();
-      await animateSequence();
-      checkSequence();
-   }
+   addNewColor();
+   await animateSequence();
+   checkSequence();
 }
 
 async function checkSequence() {
    $(".btn").on("click", async function (event) {
-
       var button = $(this);
-      await logicHandler(button);
-
-   });
-}
-
-async function logicHandler(button) {
-
-   button.addClass("pressed");
-   console.log("clicked");
-   await button.animate({
-      opacity: 0.3
-   }).animate({
-      opacity: 1.0
-   }).promise();
-   setTimeout(function () {
-      button.removeClass("pressed");
-      console.log()
-   }, 500);
-   if (userSeqIndx + 1 == generatedSequence.length) {
-      if (this.id != generatedSequence[userSeqIndx++]) {
-         gameLost();
-         return false;
-      } else {
+      button.addClass("pressed");
+      console.log("clicked");
+      await button.animate({
+         opacity: 0.3
+      }).animate({
+         opacity: 1.0
+      }).promise();
+      setTimeout(function () {
+         button.removeClass("pressed");
+         console.log()
+      }, 500);
+      if (userSeqIndx + 1 == generatedSequence.length) {
+         if (this.id != generatedSequence[userSeqIndx++]) {
+            gameLost();
+            return false;
+         }
          setTimeout(function () {
             nextLevel();
          }, 1000);
 
-      }
 
+      } else if (userSeqIndx < generatedSequence.length) {
+         if (this.id != generatedSequence[userSeqIndx++]) {
+            gameLost();
+            return false;
+         }
 
-   } else if (userSeqIndx < generatedSequence.length) {
-      if (this.id != generatedSequence[userSeqIndx++]) {
-         gameLost();
-         return false;
       } else {
-         nextLevel();
-         return false;
+         setTimeout(function () {
+            nextLevel();
+         }, 1000);
       }
 
-   } else {
-      setTimeout(function () {
-         nextLevel();
-      }, 1000);
-      return true;
-   }
+      function gameLost() {
+         $("#level-title").text("Aw cutie, you lost! Wanna marry me?🎕 Press A.");
+         isGameEnded = true;
+         $(".btn").off("click");
+      }
 
-
+      function nextLevel() {
+         $("#level-title").text(winningTexts[randomNumber()]);
+         level++;
+         userSeqIndx = 0;
+         levelHandler();
+         $(".btn").off("click");
+      }
+   });
 }
 
-function gameLost() {
-   $("#level-title").text("Aw cutie, you lost! Wanna marry me?🎕 Press A.");
-   hasGameEnded = true;
-   $(".btn").off("click");
-}
-
-function nextLevel() {
-   level++;
-   userSeqIndx = 0;
-   levelHandler();
-   $(".btn").off("click");
-}
 
 function startGame() {
-   userSeqIndx = 0;
    level = 1;
-   hasGameEnded = false;
+   isGameEnded = false;
    levelHandler();
 }
 
-$(document).on("keydown", function (event) {
-   if (event.key.toLowerCase() == 'a' && hasGameEnded) {
+$(document).on("click", function () {
+   if (isGameEnded) {
       startGame();
-      $("#level-title").text("Game!");
+      $("#level-title").text("Game On!");
+   }
+});
+
+$(document).on("keydown", function (event) {
+   if (event.key.toLowerCase() == 'a' && isGameEnded) {
+      startGame();
+      $("#level-title").text("Game On!");
    }
 });
