@@ -108,7 +108,7 @@ async function checkSequence() {
       }
 
       function gameLost() {
-         $("#level-title").text("Aw cutie, you lost! Wanna marry me?🎕 Press A.");
+         $("#level-title").text("Aw cutie, you lost! Wanna marry me?💐 Press A.");
          isGameEnded = true;
          $(".btn").off("click");
       }
