@@ -4,11 +4,13 @@ body {
 }
 
 #level-title {
-  position: static;
+  position: fixed;
   font-family: 'Press Start 2P', cursive;
   justify-content: center;
   font-size: 4vw;
-  margin: 5%;
+  /* margin: 5%; */
+  left: 50%;
+  transform: translate(-50%);
   color: #FEF2BF;
 }
 
@@ -31,6 +33,9 @@ body {
   margin: 0.3rem;
   display: inline-block;
   height: 12.5cqmax;
+
+  /* max-height: fit-content;
+  max-width: fit-content; */
   width: 12.5cqmax;
   border: 1rem solid black;
   border-radius: 20%;
