@@ -84,7 +84,7 @@ async function checkSequence() {
       setTimeout(function () {
          button.removeClass("pressed");
          console.log()
-      }, 500);
+      }, 200);
       if (userSeqIndx + 1 == generatedSequence.length) {
          if (this.id != generatedSequence[userSeqIndx++]) {
             gameLost();
