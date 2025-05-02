@@ -94,7 +94,6 @@ async function checkSequence() {
       }).promise();
       setTimeout(function () {
          button.removeClass("pressed");
-
       }, 200);
       if (userSeqIndx + 1 == generatedSequence.length) {
          if (this.id != generatedSequence[userSeqIndx++]) {
@@ -127,14 +126,16 @@ function gameLost() {
    setTimeout(function () {
       $("body").removeClass("game-over");
    }, 200);
-   generatedSequence = [];
+   
    hasGameEnded = true;
    $(".btn").off("click");
 }
 
 function nextLevel() {
    $("#level-title").text(winningTexts[randomNumber()]);
-   level++;
+   setTimeout(function () {
+      $("#level-title").text("Level: " + (++level));
+   }, 1000);
    userSeqIndx = 0;
    levelHandler();
    $(".btn").off("click");
@@ -142,6 +143,8 @@ function nextLevel() {
 
 function startGame() {
    level = 1;
+   generatedSequence = [];
+   userSeqIndx = 0;
    hasGameEnded = false;
    levelHandler();
 }
