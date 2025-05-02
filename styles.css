@@ -4,39 +4,45 @@ body {
 }
 
 #level-title {
-  position: fixed;
+  position: relative;
   font-family: 'Press Start 2P', cursive;
   justify-content: center;
-  font-size: 4vw;
+  font-size: 3cqmax;
   /* margin: 5%; */
-  left: 50%;
-  transform: translate(-50%);
+  text-align: center;
+  align-content: center;
+  /* transform: translate(-50%); */
   color: #FEF2BF;
 }
 
 .container {
   margin-top: 1.2vw; 
-  display: block;
-  position: fixed;
+  display: flex;
+  width: min-content;
+  height: 80vh;
+  vertical-align: middle;
+  position: relative;
   align-items: center;
   text-align: center;
-  top: 50%;
+  /* top: 50%; */
   left: 50%;
-  transform: translate(-50%, -50%);
+  
+  transform: translate(-50%, 0%);
+
   justify-content: center;
 }
 
 .btn {
-  position: relative;
+  position: sticky;
   justify-content: center;
   align-items: center;
   margin: 0.3rem;
   display: inline-block;
-  height: 12.5cqmax;
+  height: 10.5cqmax;
 
   /* max-height: fit-content;
   max-width: fit-content; */
-  width: 12.5cqmax;
+  width: 10.5cqmax;
   border: 1rem solid black;
   border-radius: 20%;
 }

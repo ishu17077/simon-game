@@ -123,6 +123,10 @@ async function checkSequence() {
 function gameLost() {
    $("#level-title").text("Aw cutie, you lost! Wanna marry me?💐 Press A.");
    wrongAudio.play();
+   $("body").addClass("game-over");
+   setTimeout(function () {
+      $("body").removeClass("game-over");
+   }, 200);
    generatedSequence = [];
    hasGameEnded = true;
    $(".btn").off("click");
