@@ -55,10 +55,7 @@ function randomNumber() {
 async function animateSequence() {
    if (!hasGameEnded) {
       for (var i = 0; i < generatedSequence.length; i++) {
-         var audio = new Audio(`./sounds/${generatedSequence[i]}.mp3`);
-         audio.play().then(function () {
-            audio.remove();
-         });
+         playAudio(generatedSequence[i]);
          await $("#" + generatedSequence[i]).animate({
             opacity: 0.3
          }).animate({
@@ -79,44 +76,57 @@ async function levelHandler() {
 }
 
 async function checkSequence() {
+   $(document).off("click");
    $(".btn").on("click", function (event) {
-      var button = $(this);
-      var audio = new Audio(`./sounds/${this.id}.mp3`);
-      audio.play().then(function () {
-         audio.remove();
-      });
+      if (!hasGameEnded) {
+         var button = $(this);
+         playAudio(this.id);
+         animatePressed(button);
+         gameLogic(this.id);
+         return;
+      }
+   });
+}
 
-      button.addClass("pressed");
-      button.animate({
-         opacity: 0.3
-      }).animate({
-         opacity: 1.0
-      }).promise();
-      setTimeout(function () {
-         button.removeClass("pressed");
-      }, 200);
-      if (userSeqIndx + 1 == generatedSequence.length) {
-         if (this.id != generatedSequence[userSeqIndx++]) {
-            gameLost();
-            return false;
-         }
-         setTimeout(function () {
-            nextLevel();
-         }, 1000);
-         return true;
-
-      } else if (userSeqIndx < generatedSequence.length) {
-         if (this.id != generatedSequence[userSeqIndx++]) {
-            gameLost();
-            return false;
-         }
-      } else {
+function gameLogic(buttonId) {
+   if (userSeqIndx + 1 == generatedSequence.length) {
+      if (buttonId != generatedSequence[userSeqIndx++]) {
          gameLost();
          return false;
       }
+      setTimeout(function () {
+         nextLevel();
+      }, 1000);
+      return true;
 
+   } else if (userSeqIndx < generatedSequence.length) {
+      if (buttonId != generatedSequence[userSeqIndx++]) {
+         gameLost();
+         return false;
+      }
+   } else {
+      gameLost();
+      return false;
+   }
+}
 
+function playAudio(name) {
+   var audio = new Audio(`./sounds/${name}.mp3`);
+   audio.play().then(function () {
+      audio.remove();
    });
+}
+
+function animatePressed(button) {
+   button.addClass("pressed");
+   button.animate({
+      opacity: 0.3
+   }).animate({
+      opacity: 1.0
+   }).promise();
+   setTimeout(function () {
+      button.removeClass("pressed");
+   }, 200);
 }
 
 function gameLost() {
@@ -125,10 +135,11 @@ function gameLost() {
    $("body").addClass("game-over");
    setTimeout(function () {
       $("body").removeClass("game-over");
+      $(document).on("click", startGame);
    }, 200);
-   
-   hasGameEnded = true;
    $(".btn").off("click");
+
+   hasGameEnded = true;
 }
 
 function nextLevel() {
@@ -142,23 +153,21 @@ function nextLevel() {
 }
 
 function startGame() {
-   level = 1;
-   generatedSequence = [];
-   userSeqIndx = 0;
-   hasGameEnded = false;
-   levelHandler();
+   if (hasGameEnded) {
+      level = 1;
+      generatedSequence = [];
+      userSeqIndx = 0;
+      $("#level-title").text("Game On!");
+      hasGameEnded = false;
+      levelHandler();
+   }
 }
 
-$(document).on("click", function () {
-   if (hasGameEnded) {
-      startGame();
-      $("#level-title").text("Game On!");
-   }
-});
+$(document).on("click", startGame);
 
 $(document).on("keydown", function (event) {
    if (event.key.toLowerCase() == 'a' && hasGameEnded) {
       startGame();
-      $("#level-title").text("Game On!");
+
    }
 });
